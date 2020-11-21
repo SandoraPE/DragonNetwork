@@ -1,7 +1,7 @@
 package com.DragonNet.packets.impl;
 
 import com.DragonNet.packets.Packet;
-import com.DragonNet.packets.SkyNetProtocol;
+import com.DragonNet.packets.DragonNetProtocol;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -14,7 +14,7 @@ public class LoginPacket extends Packet {
 
     @Override
     public int getPacketId() {
-        return SkyNetProtocol.LOGIN_PROTOCOL;
+        return DragonNetProtocol.LOGIN_PROTOCOL;
     }
 
     @Override

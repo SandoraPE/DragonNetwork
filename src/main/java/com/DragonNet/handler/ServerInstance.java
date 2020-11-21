@@ -1,6 +1,6 @@
 package com.DragonNet.handler;
 
-import com.DragonNet.packets.session.ServerSession;
+import com.DragonNet.packets.session.SessionHandler;
 import com.DragonNet.pipeline.handshake.ServerHandshakeProtocol;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -10,9 +10,9 @@ import io.netty.handler.ssl.SslContext;
 public class ServerInstance extends ChannelInitializer<SocketChannel> {
 
     private final SslContext sslCtx;
-    private final ServerSession serverSession;
+    private final SessionHandler serverSession;
 
-    public ServerInstance(ServerSession session, SslContext sslCtx) {
+    public ServerInstance(SessionHandler session, SslContext sslCtx) {
         this.sslCtx = sslCtx;
         this.serverSession = session;
     }
@@ -34,8 +34,6 @@ public class ServerInstance extends ChannelInitializer<SocketChannel> {
         // of byte which contains the length of a message following by the raw data itself.
         // Therefore: "Payload length" "Actual Payload" "Payload length " "Actual Payload" ...
 
-        pipeline.addLast("handshake", new ServerHandshakeProtocol(ch));
-
-        ch.closeFuture().addListener(serverSession::handleDisconnection);
+        pipeline.addLast("handshake", new ServerHandshakeProtocol(serverSession, ch));
     }
 }

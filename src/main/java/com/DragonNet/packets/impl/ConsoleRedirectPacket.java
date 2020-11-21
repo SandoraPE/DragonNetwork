@@ -1,7 +1,7 @@
 package com.DragonNet.packets.impl;
 
 import com.DragonNet.packets.Packet;
-import com.DragonNet.packets.SkyNetProtocol;
+import com.DragonNet.packets.DragonNetProtocol;
 
 public class ConsoleRedirectPacket extends Packet {
 
@@ -9,7 +9,7 @@ public class ConsoleRedirectPacket extends Packet {
 
     @Override
     public int getPacketId() {
-        return SkyNetProtocol.CONSOLE_REDIRECT;
+        return DragonNetProtocol.CONSOLE_REDIRECT;
     }
 
     @Override

@@ -1,33 +1,41 @@
 package com.DragonNet.packets.session;
 
 import com.DragonNet.handler.ServerInstance;
+import com.DragonNet.packets.Packet;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.ServerChannel;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.concurrent.Future;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Log4j2
-public class ServerSession {
-
-    public static List<Channel> session = new ArrayList<>();
+public class ServerSession implements SessionHandler {
 
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
+
+    private final BlockingQueue<Packet> packetQueue = new LinkedBlockingQueue<>();
 
     public ServerSession(int serverPort) {
         initSession(serverPort);
     }
 
+    /**
+     * Attempts to safely read all packets in main thread.
+     */
     public void tickSession() {
-
+        Packet pk;
+        while ((pk = packetQueue.poll()) != null) {
+            log.info(pk.toString());
+        }
     }
 
     private void initSession(int serverPort) {
@@ -60,6 +68,7 @@ public class ServerSession {
 
             // Bind and start to accept incoming connections.
             b.bind(serverPort).sync();
+
             log.info("Currently listening on port: {}", serverPort);
         } catch (Exception err) {
             err.printStackTrace();
@@ -71,6 +80,8 @@ public class ServerSession {
         bossGroup.shutdownGracefully();
     }
 
-    public void handleDisconnection(Future<? super Void> future) {
+    @Override
+    public void queueRawPacket(Packet packet) {
+        packetQueue.add(packet);
     }
 }

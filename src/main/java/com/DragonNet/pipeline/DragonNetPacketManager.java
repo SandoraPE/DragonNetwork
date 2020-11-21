@@ -23,7 +23,7 @@ public class DragonNetPacketManager extends ByteToMessageCodec<Packet> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out) throws InterruptedException {
+    protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out) {
         // "Length" "Data"
         ByteBuf buffer = ctx.alloc().buffer();
         buffer.writeInt(msg.getPacketId());
@@ -36,6 +36,7 @@ public class DragonNetPacketManager extends ByteToMessageCodec<Packet> {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         Packet pk = PacketRegistry.getPacket(in.readInt());
+
         pk.setChannel(channel);
         pk.decode(in);
 
@@ -43,12 +44,5 @@ public class DragonNetPacketManager extends ByteToMessageCodec<Packet> {
 
         // Clear out byte buffer from context, this will avoid decode() function repeating itself
         in.clear();
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ctx.close();
-
-        log.info("[{}] has disconnected from the server.", ctx.channel().remoteAddress().toString());
     }
 }

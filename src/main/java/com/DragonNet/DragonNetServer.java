@@ -1,8 +1,9 @@
 package com.DragonNet;
 
-import com.DragonNet.handler.ServerInstance;
 import com.DragonNet.packets.session.ServerSession;
 import lombok.extern.log4j.Log4j2;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Server-side netty systems.
@@ -10,21 +11,28 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DragonNetServer {
 
-    private final ServerInstance server;
+    private final ServerSession server;
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
 
     public static void main(String[] args) throws Exception {
         new DragonNetServer(8080);
     }
 
     public DragonNetServer(int port) throws InterruptedException {
-        this.server = new ServerInstance(new ServerSession(port), null);
+        this.server = new ServerSession(port);
 
         start();
     }
 
+    @SuppressWarnings("BusyWait")
     private void start() throws InterruptedException {
-        while (true) {
-            Thread.sleep(50);
+        // 50 ticks per second unit.
+        while (isRunning.get()) {
+            server.tickSession();
+
+            Thread.sleep(20);
         }
+
+        server.shutdown();
     }
 }

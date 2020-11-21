@@ -1,8 +1,10 @@
 package com.DragonNet.utils;
 
+import com.DragonNet.packets.DragonNetProtocol;
+import com.DragonNet.packets.Packet;
 import com.DragonNet.packets.impl.DefaultPacketHandler;
 import com.DragonNet.packets.impl.LoginPacket;
-import com.DragonNet.packets.Packet;
+import com.DragonNet.packets.impl.KeepAlivePacket;
 
 public class PacketRegistry {
 
@@ -18,6 +20,7 @@ public class PacketRegistry {
 
     static {
         packets[0] = new DefaultPacketHandler();
-        packets[1] = new LoginPacket();
+        packets[DragonNetProtocol.LOGIN_PROTOCOL] = new LoginPacket();
+        packets[DragonNetProtocol.PING_PACKET] = new KeepAlivePacket();
     }
 }

@@ -1,5 +1,6 @@
 package com.DragonNet.pipeline.handshake;
 
+import com.DragonNet.packets.session.SessionHandler;
 import com.DragonNet.pipeline.DragonNetPacketManager;
 import com.DragonNet.pipeline.DragonNetPacketTelemetry;
 import io.netty.buffer.ByteBuf;
@@ -21,12 +22,18 @@ import java.util.List;
 @Log4j2
 public class ServerHandshakeProtocol extends ByteToMessageCodec<ByteBuf> {
 
+    // Handshake protocol (This is my interpretation of handshake protocol and is not using
+    // the SYN-ACK protocol), this byte will have to be sent from client's stream in order to verify.
+    // Otherwise the connection will be dropped. This way here is to perform drop-connection on idle
+    // sockets or unwanted connection.
     private static final byte[] HANDSHAKE_PROTOCOL = ByteBufUtil.decodeHexDump("4f6820796f752061726520612066757272793f");
 
     private final SocketChannel channel;
+    private final SessionHandler session;
 
-    public ServerHandshakeProtocol(SocketChannel channel) {
+    public ServerHandshakeProtocol(SessionHandler session, SocketChannel channel) {
         this.channel = channel;
+        this.session = session;
     }
 
     @Override
@@ -36,12 +43,12 @@ public class ServerHandshakeProtocol extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) {
         out.writeBytes(msg);
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) {
         // Direct buffer.
         if (buffer.readableBytes() >= HANDSHAKE_PROTOCOL.length) {
             byte[] bytes = new byte[HANDSHAKE_PROTOCOL.length];
@@ -51,15 +58,16 @@ public class ServerHandshakeProtocol extends ByteToMessageCodec<ByteBuf> {
             }
 
             if (Arrays.equals(bytes, HANDSHAKE_PROTOCOL)) {
-                out.add(Unpooled.buffer().writeBytes(ByteBufUtil.decodeHexDump("5965732c20796573204920616d2061206675727279")));
+                ctx.channel().writeAndFlush(Unpooled.buffer().writeBytes(ByteBufUtil.decodeHexDump("5965732c20796573204920616d2061206675727279")));
 
                 ctx.pipeline().remove("timeout");
                 ctx.pipeline().remove("handshake");
 
                 ctx.pipeline().addLast(new LengthFieldBasedFrameDecoder(0x7FFF, 0, 2, 0, 2));
 
+                ctx.pipeline().addLast("timeout", new ReadTimeoutHandler(60));
                 ctx.pipeline().addLast("packetsGroup", new DragonNetPacketManager(channel));
-                ctx.pipeline().addLast("packetTelemetry", new DragonNetPacketTelemetry(channel));
+                ctx.pipeline().addLast("packetTelemetry", new DragonNetPacketTelemetry(session));
             }
         }
     }

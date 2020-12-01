@@ -1,6 +1,6 @@
 package com.DragonNet;
 
-import com.DragonNet.packets.session.ClientSession;
+import com.DragonNet.session.ClientSession;
 import lombok.extern.log4j.Log4j2;
 
 import java.net.InetSocketAddress;

@@ -1,6 +1,6 @@
 package com.DragonNet.pipeline.handshake;
 
-import com.DragonNet.packets.session.ClientSession;
+import com.DragonNet.session.ClientSession;
 import com.DragonNet.pipeline.DragonNetPacketManager;
 import com.DragonNet.pipeline.DragonNetPacketTelemetry;
 import io.netty.buffer.ByteBuf;

@@ -1,4 +1,4 @@
-package com.DragonNet.packets.session;
+package com.DragonNet.session;
 
 import com.DragonNet.handler.ServerInstance;
 import com.DragonNet.packets.Packet;
@@ -62,7 +62,7 @@ public class ServerSession implements SessionHandler {
             ServerBootstrap b = new ServerBootstrap()
                     .group(bossGroup, workerGroup)
                     .channel(classPath)
-                    .childHandler(new ServerInstance(this, null))
+                    .childHandler(new ServerInstance(this))
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 

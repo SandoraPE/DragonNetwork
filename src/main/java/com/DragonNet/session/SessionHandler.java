@@ -1,4 +1,4 @@
-package com.DragonNet.packets.session;
+package com.DragonNet.session;
 
 import com.DragonNet.packets.Packet;
 

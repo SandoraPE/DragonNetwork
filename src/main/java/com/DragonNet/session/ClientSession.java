@@ -1,4 +1,4 @@
-package com.DragonNet.packets.session;
+package com.DragonNet.session;
 
 import com.DragonNet.handler.ClientInstance;
 import com.DragonNet.packets.Packet;
@@ -15,6 +15,7 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 import java.net.InetSocketAddress;
@@ -61,6 +62,7 @@ public class ClientSession implements SessionHandler {
         }
     }
 
+    @SneakyThrows
     private void initSession(InetSocketAddress address) {
         workerGroup = new NioEventLoopGroup(4);
         Class<? extends SocketChannel> classPath = NioSocketChannel.class;

@@ -1,6 +1,6 @@
 package com.DragonNet.pipeline.handshake;
 
-import com.DragonNet.packets.session.SessionHandler;
+import com.DragonNet.session.SessionHandler;
 import com.DragonNet.pipeline.DragonNetPacketManager;
 import com.DragonNet.pipeline.DragonNetPacketTelemetry;
 import io.netty.buffer.ByteBuf;
@@ -62,6 +62,14 @@ public class ServerHandshakeProtocol extends ByteToMessageCodec<ByteBuf> {
 
                 ctx.pipeline().remove("timeout");
                 ctx.pipeline().remove("handshake");
+
+                // Reference: https://stackoverflow.com/questions/26549567/best-way-to-send-out-two-byte-buffers-header-body-in-netty
+                //
+                // So default MTU for TCP socket transfer is 1500 bytes, this is interesting since I have no literal
+                // way to understand this MTU thingy until now, so I have chosen this method to read packets at a maximum
+                // length of a short which is 0x7FFF in hexadecimal. According to the referenced link, I will have to put a series
+                // of byte which contains the length of a message following by the raw data itself.
+                // Therefore: "Payload length" "Actual Payload" "Payload length " "Actual Payload" ...
 
                 ctx.pipeline().addLast(new LengthFieldBasedFrameDecoder(0x7FFF, 0, 2, 0, 2));
 

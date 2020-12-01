@@ -1,6 +1,6 @@
 package com.DragonNet;
 
-import com.DragonNet.packets.session.ServerSession;
+import com.DragonNet.session.ServerSession;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.concurrent.atomic.AtomicBoolean;

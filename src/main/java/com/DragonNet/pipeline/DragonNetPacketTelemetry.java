@@ -1,7 +1,7 @@
 package com.DragonNet.pipeline;
 
 import com.DragonNet.packets.Packet;
-import com.DragonNet.packets.session.SessionHandler;
+import com.DragonNet.session.SessionHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.log4j.Log4j2;

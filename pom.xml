@@ -6,7 +6,14 @@
 
     <groupId>com.larryTheCoder</groupId>
     <artifactId>DragonNetwork</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>dragon-core</module>
+        <module>dragon-server</module>
+        <module>dragon-client</module>
+    </modules>
 
     <properties>
         <!-- Project properties -->
